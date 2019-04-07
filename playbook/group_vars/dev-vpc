@@ -1,0 +1,61 @@
+vpc_name: dev-vpc
+
+aws_region: ap-northeast-2
+# echo 'VAULT_ENCRYPTED_STRING' | ansible-vault decrypt --vault-id aws_key_password_file /dev/stdin --output=/dev/stderr > /dev/null
+aws_access_key: {AWS_ACCESS_KEY}
+
+# echo 'VAULT_ENCRYPTED_STRING' | ansible-vault decrypt --vault-id aws_key_password_file /dev/stdin --output=/dev/stderr > /dev/null
+aws_secret_key: {AWS_SECRET_KEY}
+
+vpc_dns_zone: '{VPC_DNS_ZONE}'
+
+vpc_cidr_block: 10.0.0.0/16
+
+vpc_subnets:
+  PublicSubnet1:
+    cidr: 10.0.0.0/24
+    az: "{{aws_region}}a"
+  PublicSubnet2:
+    cidr: 10.0.1.0/24
+    az: "{{aws_region}}c"
+  PrivateSubnet1:
+    cidr: 10.0.2.0/24
+    az: "{{aws_region}}a"
+  PrivateSubnet2:
+    cidr: 10.0.3.0/24
+    az: "{{aws_region}}c"
+
+vpc_security_groups:
+- name: vpc
+  description: "Allow internal traffic in the VPC"
+  rules:
+  - proto: all
+    group_name: vpc
+    ports:
+    - 80
+    - 8080
+    - 443
+- name: allow-public-ssh
+  description: "Allow public SSH"
+  rules:
+  - proto: tcp
+    cidr_ip: 10.0.0.0/16
+    ports:
+    - 22
+  - proto: tcp
+    cidr_ip: {CIDR_IP}/32
+    ports:
+    - 22
+  - proto: tcp
+    cidr_ip: {CIDR_IP}/32
+    ports:
+    - 22
+- name: allow-public-http
+  description: "Allow public web traffic"
+  rules:
+  - proto: tcp
+    cidr_ip: 0.0.0.0/0
+    ports:
+    - 80
+    - 8080
+    - 443

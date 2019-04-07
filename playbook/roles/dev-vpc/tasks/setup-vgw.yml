@@ -1,0 +1,9 @@
+- name: Create a new vgw attached to a specific VPC
+  ec2_vpc_vgw:
+    state: present
+    region: ap-northeast-2
+    profile: default
+    vpc_id: "{{ vpc_id }}"
+    name: benx-dev-vgw
+    type: ipsec.1
+  register: created_vgw
